@@ -103,9 +103,21 @@ view model =
 box : { label : String, palette : Palette } -> Html msg
 box props =
     let
+        p =
+            props.palette
+
         heading : String -> Html msg
         heading label_ =
             div [ css [ fontWeight bold ] ] [ text label_ ]
+
+        listItem : String -> Maybe Color -> Html msg
+        listItem name maybeColor =
+            li [ css [ displayFlex, property "column-gap" "0.5em" ] ]
+                [ div [ css [ after [ property "content" (qt " :") ] ] ] [ text name ]
+                , maybeColor
+                    |> Maybe.map cellWithColorValue
+                    |> Maybe.withDefault (text "-")
+                ]
     in
     div
         [ css
@@ -115,41 +127,33 @@ box props =
             , flexDirection column
             , property "row-gap" "0.5em"
             , borderRadius (px 10)
-            , paletteWith (border3 (px 1) solid) props.palette
+            , paletteWith (border3 (px 1) solid) p
             ]
         ]
         [ heading props.label
         , ul [ css [ listStyle none, margin zero, padding zero ] ]
-            [ propertyPreview "background" props.palette.background
-            , propertyPreview "color" props.palette.color
-            , propertyPreview "border" props.palette.border
+            [ listItem "background" p.background
+            , listItem "color" p.color
+            , listItem "border" p.border
             ]
         ]
 
 
-propertyPreview : String -> Maybe Color -> Html msg
-propertyPreview name maybeColor =
-    let
-        coloredCell c =
-            div
-                [ css
-                    [ width (em 1)
-                    , height (em 1)
-                    , borderRadius (px 2)
-                    , backgroundColor c
-                    , border3 (px 1) solid currentColor
-                    ]
+cellWithColorValue : Color -> Html msg
+cellWithColorValue c =
+    div
+        [ css
+            [ displayFlex
+            , property "column-gap" "0.5em"
+            , alignItems center
+            , before
+                [ property "content" (qt "")
+                , width (em 1)
+                , height (em 1)
+                , borderRadius (px 2)
+                , backgroundColor c
+                , border3 (px 1) solid currentColor
                 ]
-                []
-    in
-    li [ css [ displayFlex, property "column-gap" "0.5em", alignItems center ] ]
-        [ div [ css [ after [ property "content" "' :'" ] ] ] [ text name ]
-        , maybeColor |> Maybe.map coloredCell |> Maybe.withDefault (text "")
-        , div []
-            [ text
-                (maybeColor
-                    |> Maybe.map .value
-                    |> Maybe.withDefault "_"
-                )
             ]
         ]
+        [ text c.value ]
