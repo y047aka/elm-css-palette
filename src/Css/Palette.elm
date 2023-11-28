@@ -1,18 +1,20 @@
 module Css.Palette exposing
     ( Palette, init
-    , palette, paletteWith
+    , palette
+    , paletteWithBackground, paletteWithColor, paletteWithBorder
     , setBackground, setColor, setBorder
     )
 
 {-|
 
 @docs Palette, init
-@docs palette, paletteWith
+@docs palette
+@docs paletteWithBackground, paletteWithColor, paletteWithBorder
 @docs setBackground, setColor, setBorder
 
 -}
 
-import Css exposing (Color, Style, backgroundColor, batch, borderColor, color)
+import Css exposing (Color, Style)
 
 
 {-| -}
@@ -32,25 +34,58 @@ init =
     }
 
 
-
--- TO STYLE
-
-
 {-| -}
 palette : Palette -> Style
-palette =
-    paletteWith borderColor
+palette p =
+    [ Maybe.map Css.backgroundColor p.background
+    , Maybe.map Css.color p.color
+    , Maybe.map Css.borderColor p.border
+    ]
+        |> List.filterMap identity
+        |> Css.batch
+
+
+type alias Options =
+    { background : Color -> Style
+    , color : Color -> Style
+    , border : Color -> Style
+    }
+
+
+paletteWith : Options -> Palette -> Style
+paletteWith fn p =
+    [ Maybe.map fn.background p.background
+    , Maybe.map fn.color p.color
+    , Maybe.map fn.border p.border
+    ]
+        |> List.filterMap identity
+        |> Css.batch
+
+
+default : Options
+default =
+    { background = Css.backgroundColor
+    , color = Css.color
+    , border = Css.borderColor
+    }
 
 
 {-| -}
-paletteWith : (Color -> Style) -> Palette -> Style
-paletteWith fn p =
-    [ Maybe.map backgroundColor p.background
-    , Maybe.map color p.color
-    , Maybe.map fn p.border
-    ]
-        |> List.filterMap identity
-        |> batch
+paletteWithBackground : (Color -> Style) -> Palette -> Style
+paletteWithBackground fn p =
+    paletteWith { default | background = fn } p
+
+
+{-| -}
+paletteWithColor : (Color -> Style) -> Palette -> Style
+paletteWithColor fn p =
+    paletteWith { default | color = fn } p
+
+
+{-| -}
+paletteWithBorder : (Color -> Style) -> Palette -> Style
+paletteWithBorder fn =
+    paletteWith { default | border = fn }
 
 
 

@@ -2,7 +2,7 @@ module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
 import Css exposing (..)
-import Css.Palette as Palette exposing (Palette, paletteWith)
+import Css.Palette as Palette exposing (Palette, paletteWithBorder)
 import Html.Styled exposing (Html, div, li, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (css)
 
@@ -127,7 +127,7 @@ box props =
             , flexDirection column
             , property "row-gap" "0.5em"
             , borderRadius (px 10)
-            , paletteWith (border3 (px 1) solid) p
+            , paletteWithBorder (border3 (px 1) solid) p
             ]
         ]
         [ heading props.label
