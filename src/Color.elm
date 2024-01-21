@@ -1,52 +1,47 @@
 module Color exposing
     ( Color
-    , rgba, rgb, hsla, hsl, oklaba, oklab
+    , rgba, rgb, hsla, hsl, oklab
     , toCssString
     )
 
 {-|
 
 @docs Color
-@docs rgba, rgb, hsla, hsl, oklaba, oklab
+@docs rgba, rgb, hsla, hsl, oklab
 @docs toCssString
 
 -}
 
 
 type Color
-    = Rgba255 Float Float Float Float
-    | Hsla360 Float Float Float Float
-    | Oklab Float Float Float Float
+    = Rgba255 Float Float Float (Maybe Float)
+    | Hsla360 Float Float Float (Maybe Float)
+    | Oklab Float Float Float (Maybe Float)
 
 
 rgba : Float -> Float -> Float -> Float -> Color
-rgba r g b a =
-    Rgba255 r g b a
+rgba r g b alpha =
+    Rgba255 r g b (Just alpha)
 
 
 rgb : Float -> Float -> Float -> Color
 rgb r g b =
-    rgba r g b 1.0
+    Rgba255 r g b Nothing
 
 
 hsla : Float -> Float -> Float -> Float -> Color
-hsla hue sat light alpha =
-    Hsla360 hue sat light alpha
+hsla h s l alpha =
+    Hsla360 h s l (Just alpha)
 
 
 hsl : Float -> Float -> Float -> Color
 hsl h s l =
-    hsla h s l 1.0
+    Hsla360 h s l Nothing
 
 
-oklaba : Float -> Float -> Float -> Float -> Color
-oklaba l a b alpha =
-    Oklab l a b alpha
-
-
-oklab : Float -> Float -> Float -> Color
-oklab l a b =
-    oklaba l a b 1.0
+oklab : Float -> Float -> Float -> Float -> Color
+oklab l a b alpha =
+    Oklab l a b (Just alpha)
 
 
 toCssString : Color -> String
@@ -59,34 +54,46 @@ toCssString c =
             ((x * 1000) |> round |> toFloat) / 1000
     in
     case c of
-        Rgba255 r g b a ->
-            cssFunction "rgba"
-                [ String.fromFloat (roundTo r)
-                , String.fromFloat (roundTo g)
-                , String.fromFloat (roundTo b)
-                , String.fromFloat (roundTo a)
-                ]
+        Rgba255 r g b alpha ->
+            cssColorLevel4 "rgb"
+                ( [ String.fromFloat (roundTo r)
+                  , String.fromFloat (roundTo g)
+                  , String.fromFloat (roundTo b)
+                  ]
+                , Maybe.map (roundTo >> String.fromFloat) alpha
+                )
 
-        Hsla360 h s l a ->
-            cssFunction "hsla"
-                [ String.fromFloat (roundTo h)
-                , String.fromFloat (pct s) ++ "%"
-                , String.fromFloat (pct l) ++ "%"
-                , String.fromFloat (roundTo a)
-                ]
+        Hsla360 h s l alpha ->
+            cssColorLevel4 "hsl"
+                ( [ String.fromFloat (roundTo h)
+                  , String.fromFloat (pct s) ++ "%"
+                  , String.fromFloat (pct l) ++ "%"
+                  ]
+                , Maybe.map (roundTo >> String.fromFloat) alpha
+                )
 
         Oklab l a b alpha ->
-            cssFunction "oklab"
-                [ String.fromFloat (roundTo l)
-                , String.fromFloat (roundTo a)
-                , String.fromFloat (roundTo b)
-                , String.fromFloat (roundTo alpha)
-                ]
+            cssColorLevel4 "oklab"
+                ( [ String.fromFloat (pct l) ++ "%"
+                  , String.fromFloat (roundTo a)
+                  , String.fromFloat (roundTo b)
+                  ]
+                , Maybe.map (roundTo >> String.fromFloat) alpha
+                )
 
 
-cssFunction : String -> List String -> String
-cssFunction funcName args =
+cssColorLevel4 : String -> ( List String, Maybe String ) -> String
+cssColorLevel4 funcName ( args, maybeAlpha ) =
+    let
+        slashAndAplha =
+            case maybeAlpha of
+                Just a ->
+                    [ "/", a ]
+
+                Nothing ->
+                    []
+    in
     funcName
         ++ "("
-        ++ String.join "," args
+        ++ String.join " " (args ++ slashAndAplha)
         ++ ")"
