@@ -14,7 +14,8 @@ module Css.Palette exposing
 
 -}
 
-import Css exposing (Color, Style)
+import Color exposing (Color)
+import Css exposing (Style, property)
 
 
 {-| -}
@@ -37,12 +38,27 @@ init =
 {-| -}
 palette : Palette -> Style
 palette p =
-    [ Maybe.map Css.backgroundColor p.background
-    , Maybe.map Css.color p.color
-    , Maybe.map Css.borderColor p.border
+    [ Maybe.map backgroundColor p.background
+    , Maybe.map color p.color
+    , Maybe.map borderColor p.border
     ]
         |> List.filterMap identity
         |> Css.batch
+
+
+backgroundColor : Color -> Style
+backgroundColor c =
+    property "background-color" (Color.toCssString c)
+
+
+color : Color -> Style
+color c =
+    property "color" (Color.toCssString c)
+
+
+borderColor : Color -> Style
+borderColor c =
+    property "border-color" (Color.toCssString c)
 
 
 type alias Options =
@@ -64,9 +80,9 @@ paletteWith fn p =
 
 default : Options
 default =
-    { background = Css.backgroundColor
-    , color = Css.color
-    , border = Css.borderColor
+    { background = backgroundColor
+    , color = color
+    , border = borderColor
     }
 
 
