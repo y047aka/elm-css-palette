@@ -1,7 +1,9 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
-import Css exposing (..)
+import Color exposing (Color, hsl, toCssString)
+import Color.Css exposing (backgroundColor, border3)
+import Css exposing (after, alignItems, before, bold, borderRadius, center, column, currentColor, displayFlex, em, flexDirection, fontWeight, height, listStyle, margin, minWidth, none, padding, property, px, qt, solid, width, zero)
 import Css.Palette as Palette exposing (Palette, paletteWithBorder)
 import Html.Styled exposing (Html, div, li, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (css)
@@ -152,8 +154,8 @@ cellWithColorValue c =
                 , height (em 1)
                 , borderRadius (px 2)
                 , backgroundColor c
-                , border3 (px 1) solid currentColor
+                , Css.border3 (px 1) solid currentColor
                 ]
             ]
         ]
-        [ text c.value ]
+        [ text (toCssString c) ]
