@@ -1,9 +1,8 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
-import Color exposing (Color, hsl, toCssString)
-import Color.Css exposing (backgroundColor, border3)
-import Css exposing (after, alignItems, before, bold, borderRadius, center, column, currentColor, displayFlex, em, flexDirection, fontWeight, height, listStyle, margin, minWidth, none, padding, property, px, qt, solid, width, zero)
+import Css exposing (after, alignItems, backgroundColor, before, bold, border3, borderRadius, center, column, currentColor, displayFlex, em, flexDirection, fontWeight, height, listStyle, margin, minWidth, none, padding, property, px, qt, solid, width, zero)
+import Css.Color exposing (Hsl360, hsl)
 import Css.Palette as Palette exposing (Palette, paletteWithBorder)
 import Html.Styled exposing (Html, div, li, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (css)
@@ -55,7 +54,7 @@ update msg model =
 -- PALETTE
 
 
-light : Palette
+light : Palette Hsl360
 light =
     { background = Just (hsl 0 0 1)
     , color = Just (hsl 0 0 0.4)
@@ -63,7 +62,7 @@ light =
     }
 
 
-dark : Palette
+dark : Palette Hsl360
 dark =
     { background = Just (hsl 0 0 0.2)
     , color = Just (hsl 0 0 0.9)
@@ -71,7 +70,7 @@ dark =
     }
 
 
-primaryButton : Palette
+primaryButton : Palette Hsl360
 primaryButton =
     { background = Just (hsl 210 1 0.5)
     , color = Just (hsl 0 0 1)
@@ -79,7 +78,7 @@ primaryButton =
     }
 
 
-secondaryButton : Palette
+secondaryButton : Palette Hsl360
 secondaryButton =
     { primaryButton
         | background = primaryButton.color
@@ -102,7 +101,7 @@ view model =
         ]
 
 
-box : { label : String, palette : Palette } -> Html msg
+box : { label : String, palette : Palette Hsl360 } -> Html msg
 box props =
     let
         p =
@@ -112,7 +111,7 @@ box props =
         heading label_ =
             div [ css [ fontWeight bold ] ] [ text label_ ]
 
-        listItem : String -> Maybe Color -> Html msg
+        listItem : String -> Maybe Hsl360 -> Html msg
         listItem name maybeColor =
             li [ css [ displayFlex, property "column-gap" "0.5em" ] ]
                 [ div [ css [ after [ property "content" (qt " :") ] ] ] [ text name ]
@@ -141,7 +140,7 @@ box props =
         ]
 
 
-cellWithColorValue : Color -> Html msg
+cellWithColorValue : Hsl360 -> Html msg
 cellWithColorValue c =
     div
         [ css
@@ -154,8 +153,8 @@ cellWithColorValue c =
                 , height (em 1)
                 , borderRadius (px 2)
                 , backgroundColor c
-                , Css.border3 (px 1) solid currentColor
+                , border3 (px 1) solid currentColor
                 ]
             ]
         ]
-        [ text (toCssString c) ]
+        [ text c.value ]
