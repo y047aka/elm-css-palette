@@ -1,8 +1,8 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
-import Css exposing (after, alignItems, backgroundColor, before, bold, border3, borderRadius, center, column, currentColor, displayFlex, em, flexDirection, fontWeight, height, listStyle, margin, minWidth, none, padding, property, px, qt, solid, width, zero)
-import Css.Color exposing (Hsl360, hsl)
+import Css exposing (..)
+import Css.Color as Color exposing (Hsl360)
 import Css.Palette as Palette exposing (Palette, paletteWithBorder)
 import Html.Styled exposing (Html, div, li, text, toUnstyled, ul)
 import Html.Styled.Attributes exposing (css)
@@ -56,25 +56,25 @@ update msg model =
 
 light : Palette Hsl360
 light =
-    { background = Just (hsl 0 0 1)
-    , color = Just (hsl 0 0 0.4)
-    , border = Just (hsl 0 0 0.7)
+    { background = Just (Color.hsl 0 0 1)
+    , color = Just (Color.hsl 0 0 0.4)
+    , border = Just (Color.hsl 0 0 0.7)
     }
 
 
 dark : Palette Hsl360
 dark =
-    { background = Just (hsl 0 0 0.2)
-    , color = Just (hsl 0 0 0.9)
-    , border = Just (hsl 0 0 0.6)
+    { background = Just (Color.hsl 0 0 0.2)
+    , color = Just (Color.hsl 0 0 0.9)
+    , border = Just (Color.hsl 0 0 0.6)
     }
 
 
 primaryButton : Palette Hsl360
 primaryButton =
-    { background = Just (hsl 210 1 0.5)
-    , color = Just (hsl 0 0 1)
-    , border = Just (hsl 210 1 0.6)
+    { background = Just (Color.hsl 210 1 0.5)
+    , color = Just (Color.hsl 0 0 1)
+    , border = Just (Color.hsl 210 1 0.6)
     }
 
 
@@ -83,7 +83,7 @@ secondaryButton =
     { primaryButton
         | background = primaryButton.color
         , color = primaryButton.background
-        , border = Just (hsl 210 1 0.6)
+        , border = Just (Color.hsl 210 1 0.6)
     }
 
 
