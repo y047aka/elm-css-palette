@@ -1,7 +1,7 @@
 # elm-css-palette
 
 ```elm
-light : Palette
+light : Palette Hsl360
 light =
     { background = Just (hsl 0 0 1)
     , color = Just (hsl 0 0 0.4)
@@ -9,7 +9,7 @@ light =
     }
 
 
-dark : Palette
+dark : Palette Hsl360
 dark =
     { background = Just (hsl 0 0 0.2)
     , color = Just (hsl 0 0 0.9)
@@ -17,7 +17,7 @@ dark =
     }
 
 
-primaryButton : Palette
+primaryButton : Palette Hsl360
 primaryButton =
     { background = Just (hsl 210 1 0.5)
     , color = Just (hsl 0 0 1)
@@ -25,7 +25,7 @@ primaryButton =
     }
 
 
-secondaryButton : Palette
+secondaryButton : Palette Hsl360
 secondaryButton =
     { primaryButton
         | background = primaryButton.color
