@@ -18,15 +18,15 @@ import Css exposing (ColorValue, Style)
 
 
 {-| -}
-type alias Palette compatible =
-    { background : Maybe (ColorValue compatible)
-    , color : Maybe (ColorValue compatible)
-    , border : Maybe (ColorValue compatible)
+type alias Palette color =
+    { background : Maybe color
+    , color : Maybe color
+    , border : Maybe color
     }
 
 
 {-| -}
-init : Palette compatible
+init : Palette (ColorValue c)
 init =
     { background = Nothing
     , color = Nothing
@@ -35,7 +35,7 @@ init =
 
 
 {-| -}
-palette : Palette compatible -> Style
+palette : Palette (ColorValue c) -> Style
 palette p =
     [ Maybe.map Css.backgroundColor p.background
     , Maybe.map Css.color p.color
@@ -45,14 +45,14 @@ palette p =
         |> Css.batch
 
 
-type alias Options compatible =
-    { background : ColorValue compatible -> Style
-    , color : ColorValue compatible -> Style
-    , border : ColorValue compatible -> Style
+type alias Options color =
+    { background : color -> Style
+    , color : color -> Style
+    , border : color -> Style
     }
 
 
-paletteWith : Options compatible -> Palette compatible -> Style
+paletteWith : Options color -> Palette color -> Style
 paletteWith fn p =
     [ Maybe.map fn.background p.background
     , Maybe.map fn.color p.color
@@ -62,7 +62,7 @@ paletteWith fn p =
         |> Css.batch
 
 
-default : Options compatible
+default : Options (ColorValue c)
 default =
     { background = Css.backgroundColor
     , color = Css.color
@@ -71,19 +71,19 @@ default =
 
 
 {-| -}
-paletteWithBackground : (ColorValue compatible -> Style) -> Palette compatible -> Style
+paletteWithBackground : (ColorValue c -> Style) -> Palette (ColorValue c) -> Style
 paletteWithBackground fn p =
     paletteWith { default | background = fn } p
 
 
 {-| -}
-paletteWithColor : (ColorValue compatible -> Style) -> Palette compatible -> Style
+paletteWithColor : (ColorValue c -> Style) -> Palette (ColorValue c) -> Style
 paletteWithColor fn p =
     paletteWith { default | color = fn } p
 
 
 {-| -}
-paletteWithBorder : (ColorValue compatible -> Style) -> Palette compatible -> Style
+paletteWithBorder : (ColorValue c -> Style) -> Palette (ColorValue c) -> Style
 paletteWithBorder fn =
     paletteWith { default | border = fn }
 
@@ -93,18 +93,18 @@ paletteWithBorder fn =
 
 
 {-| -}
-setBackground : ColorValue compatible -> Palette compatible -> Palette compatible
+setBackground : color -> Palette color -> Palette color
 setBackground c p =
     { p | background = Just c }
 
 
 {-| -}
-setColor : ColorValue compatible -> Palette compatible -> Palette compatible
+setColor : color -> Palette color -> Palette color
 setColor c p =
     { p | color = Just c }
 
 
 {-| -}
-setBorder : ColorValue compatible -> Palette compatible -> Palette compatible
+setBorder : color -> Palette color -> Palette color
 setBorder c p =
     { p | border = Just c }
