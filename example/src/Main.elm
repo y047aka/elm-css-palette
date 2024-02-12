@@ -4,7 +4,7 @@ import Browser
 import Css exposing (..)
 import Css.Color as Color exposing (Hsl360)
 import Css.Palette as Palette exposing (Palette, paletteWithBorder)
-import Html.Styled exposing (Html, div, li, text, toUnstyled, ul)
+import Html.Styled exposing (Html, dd, div, dl, dt, text, toUnstyled)
 import Html.Styled.Attributes exposing (css)
 
 
@@ -93,7 +93,7 @@ secondaryButton =
 
 view : Model -> Html Msg
 view model =
-    div [ css [ displayFlex, property "column-gap" "10px" ] ]
+    div [ css [ displayFlex, flexWrap wrap , property "gap" "10px" ] ]
         [ box { label = "Light", palette = light }
         , box { label = "Dark", palette = dark }
         , box { label = "Primary Button", palette = primaryButton }
@@ -101,7 +101,7 @@ view model =
         ]
 
 
-box : { label : String, palette : Palette Hsl360 } -> Html msg
+box : { label : String, palette : Palette (ColorValue color) } -> Html msg
 box props =
     let
         p =
@@ -110,51 +110,67 @@ box props =
         heading : String -> Html msg
         heading label_ =
             div [ css [ fontWeight bold ] ] [ text label_ ]
-
-        listItem : String -> Maybe Hsl360 -> Html msg
-        listItem name maybeColor =
-            li [ css [ displayFlex, property "column-gap" "0.5em" ] ]
-                [ div [ css [ after [ property "content" (qt " :") ] ] ] [ text name ]
-                , maybeColor
-                    |> Maybe.map cellWithColorValue
-                    |> Maybe.withDefault (text "-")
-                ]
     in
     div
         [ css
-            [ minWidth (em 18)
+            [ minWidth (em 19)
             , padding (em 1)
             , displayFlex
             , flexDirection column
-            , property "row-gap" "0.5em"
+            , property "row-gap" "1em"
             , borderRadius (px 10)
             , paletteWithBorder (border3 (px 1) solid) p
             ]
         ]
         [ heading props.label
-        , ul [ css [ listStyle none, margin zero, padding zero ] ]
-            [ listItem "background" p.background
-            , listItem "color" p.color
-            , listItem "border" p.border
+        , definitionList
+            [ ( "background", p.background )
+            , ( "color", p.color )
+            , ( "border", p.border )
             ]
         ]
 
 
-cellWithColorValue : Hsl360 -> Html msg
-cellWithColorValue c =
+colorcCell : ColorValue color -> Html msg
+colorcCell c =
     div
         [ css
-            [ displayFlex
-            , property "column-gap" "0.5em"
-            , alignItems center
-            , before
-                [ property "content" (qt "")
-                , width (em 1)
-                , height (em 1)
-                , borderRadius (px 2)
-                , backgroundColor c
-                , border3 (px 1) solid currentColor
-                ]
+            [ width (em 1.5)
+            , height (em 1.5)
+            , borderRadius (em 0.25)
+            , backgroundColor c
+            , border3 (px 1) solid currentColor
             ]
         ]
-        [ text c.value ]
+        []
+
+
+definitionList : List ( String, Maybe (ColorValue color) ) -> Html msg
+definitionList pairs =
+    let
+        dtdd : ( String, Maybe (ColorValue color) ) -> List (Html msg)
+        dtdd ( name, maybeColor ) =
+            [ dt [ css [ textAlign right ] ] [ text name ]
+            , dd [ css [ margin zero ] ]
+                [ maybeColor
+                    |> Maybe.map colorcCell
+                    |> Maybe.withDefault (text "-")
+                ]
+            , dd [ css [ margin zero ] ]
+                [ maybeColor
+                    |> Maybe.map (.value >> text)
+                    |> Maybe.withDefault (text "")
+                ]
+            ]
+    in
+    dl
+        [ css
+            [ margin zero
+            , property "display" "grid"
+            , property "grid-template-columns" "auto auto 1fr"
+            , alignItems center
+            , property "row-gap" "0.25em"
+            , property "column-gap" "0.5em"
+            ]
+        ]
+        (pairs |> List.map dtdd |> List.concat)
